@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: streaming-demo-api
+spec:
+  selector:
+    app: streaming-demo
+    tier: backend
+    component: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streaming-demo-api
+  labels:
+    app: streaming-demo
+    tier: backend
+    component: api
+spec:
+  selector:
+    matchLabels:
+      app: streaming-demo
+      tier: backend
+      component: api
+  template:
+    metadata:
+      labels:
+        app: streaming-demo
+        tier: backend
+        component: api
+    spec:
+      containers:
+        - name: node-app
+          image: mattiacattarinussi/streaming-demo-backend
+          ports:
+            - containerPort: 5000
+          env:
+            - name: REDIS_HOST
+              value: streaming-demo-redis
+            - name: REDIS_PORT
+              value: '6379'
